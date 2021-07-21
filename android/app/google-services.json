@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "899463723246",
+    "project_id": "todolist-67aca",
+    "storage_bucket": "todolist-67aca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899463723246:android:12ff97444e750aab219bff",
+        "android_client_info": {
+          "package_name": "com.exofirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "899463723246-po9vu5his8aa89j9keb9n5nfuld73q6e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5pC9X77Wnah61wSEpDBjg_34OQrC6CA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "899463723246-po9vu5his8aa89j9keb9n5nfuld73q6e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
