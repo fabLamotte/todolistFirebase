@@ -1,11 +1,11 @@
 import React, {useState, createContext} from 'react'
 
 // Navigation
-import HomeNavigation from './HomeNavigation'
 import AuthNavigation from './AuthNavigation'
 
 // Context
 import { UserContext } from '../context/UserContext'
+import TodoList from '../screens/TodoList'
 
 const RootNavigation = () => {
     const [user, setUser] = useState()
@@ -19,7 +19,7 @@ const RootNavigation = () => {
         <UserContext.Provider value={ data }>
             {
                 user ? 
-                <HomeNavigation /> 
+                <TodoList />
                 : 
                 <AuthNavigation 
                     initialized={initialized} 

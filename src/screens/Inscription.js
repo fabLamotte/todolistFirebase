@@ -31,9 +31,9 @@ const Inscription = (props) => {
         .createUserWithEmailAndPassword(values.email, values.password)
         .then((response) => {
             // Ajout de l'utilisateur en base de données
-            firestore().collection("users").add({
-                id: response.user.uid,
+            firestore().collection("users").doc(auth().currentUser.uid).set({
                 email: response.user.email,
+                task:[]
             })
             .then(() => {
             })

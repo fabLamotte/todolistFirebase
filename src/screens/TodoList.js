@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { View, Text, StyleSheet, FlatList } from 'react-native'
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity } from 'react-native'
 
 // Component
 import Deconnexion from './../component/Deconnexion'
@@ -7,55 +7,130 @@ import TodoItem from '../component/TodoItem'
 // BDD
 import auth from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore'
+// Gestion formulaire
+import { Formik } from 'formik'
+import * as yup from 'yup'
+
+import { SwipeListView } from 'react-native-swipe-list-view';
+
+const NewTaskValidationSchema = yup.object().shape({
+    name: yup
+        .string()
+        .required('Veuillez donner un nom à votre tâche')
+})
 
 const TodoList = () => {
 
     const [data, setData] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    
+    const userUid = auth().currentUser.uid
+
+    // Fonction d'ajout d'une tâche
+    const AddTodo = (values) => {
+        // Insertion de la nouvelle tâche
+        firestore().collection('users').doc(userUid).update({
+            task: firestore.FieldValue.arrayUnion({
+                id: data.length,
+                name:values.name,
+                complete:false
+            })
+        })
+        // Rafraîchissement de la liste
+        setIsLoading(true)
+    }
+ 
+    // Chargement des tâches au chargement de la page
     useEffect(() => {
         if(isLoading){
-            const userDocument = firestore().collection("todos").get().then((querySnapshot) => {
-                let list = []
-                let id = 0
-                querySnapshot.forEach((doc) => {
-                    list.push({
-                        id:id,
-                        ...doc.data()
-                    })
-                    id++
-                });
-                setData(list)
-                console.log(list)
-            });
+            firestore().collection('users').doc(userUid).get()
+            .then((doc) => {
+                setData(doc.data().task)
+            })
             setIsLoading(false)
         }
-
     }, [isLoading])
 
     return (
         <View style={styles.container}>
-            <Deconnexion />
             <View>
-                <Text style={styles.title}>Votre todo Liste !!</Text>
+                <Formik
+                    initialValues={{ name: '' }}
+                    onSubmit={values => AddTodo(values)}
+                    validationSchema={NewTaskValidationSchema}>
+
+                    {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                        <View style={styles.containerForm}>
+                            <View style={styles.form}>
+                                <View style={styles.blockInput}>
+                                    <TextInput
+                                        style={styles.input}
+                                        onChangeText={handleChange('name')}
+                                        onBlur={handleBlur('name')}
+                                        value={values.name}
+                                        placeholder="Nom de la tâche"
+                                    />
+                                </View>
+                                <View style={styles.submitView}>
+                                    <TouchableOpacity onPress={handleSubmit} style={styles.button}>
+                                        <Text style={styles.buttonText}>Ajouter</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                            <View>
+                                {(errors.name && touched.name) &&
+                                    <Text style={{ color: 'white', backgroundColor:'#D44040', width:'100%', textAlign:'center' }}>{errors.name}</Text>
+                                }
+                            </View>
+                        </View>
+                    )}
+
+                </Formik>
+                <View style={styles.list}>
+                    {
+                        data.length > 0? 
+                            <FlatList 
+                                data={data}
+                                renderItem={(item) => 
+                                    <TodoItem 
+                                        item={item.item} 
+                                        data={data} 
+                                        setData={setData} 
+                                        firestore={firestore} 
+                                        userUid={userUid} 
+                                    />
+                                }
+                                keyExtractor={item => item.id}
+                            />
+                        : 
+                        <Text style={styles.noData}>Aucune tâche ajoutée pour le moment</Text>
+                    }
+                </View>
             </View>
-            {
-                data.length > 0? 
-                    <FlatList 
-                        data={data}
-                        renderItem={(item) => <TodoItem item={item.item} />}
-                        keyExtractor={item => item.id}
-                    />
-                : 
-                    <Text style={styles.noData}>Aucune tâche ajoutée pour le moment</Text>
-            }
+            <Deconnexion />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container:{
-        flex:1
+        flex:1,
+        justifyContent:'space-between',
+    },
+    containerForm:{
+        margin:15,
+        borderColor:'#D3D3D3',
+        borderWidth:1,
+        borderRadius:20,
+        overflow:'hidden',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+
+        elevation: 3,
     },
     noData:{
         textAlign:'center'
@@ -66,6 +141,55 @@ const styles = StyleSheet.create({
         fontSize:25,
         fontStyle:'italic',
         color:'#938C8C'
+    },
+    submitView: {
+        height:50,
+        width:'20%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    button: {
+        backgroundColor: '#6484BD',
+        height: 50,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+    input:{
+        height:50,
+        paddingLeft:20,
+        justifyContent:'center',
+    },
+    textarea:{
+        borderWidth:1,
+        borderColor:'#CFCFCF',
+    },
+    title:{
+        color:'grey',
+        fontSize:30,
+        marginVertical:20
+    },
+    form:{
+        height:50,
+        width:'100%',
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    blockInput:{
+        height:'100%',
+        width:'80%',
+    },
+    red:{
+        color:'red',
+        textAlign:'center'
+    },
+    list:{
+        marginTop:20
     }
 })
 

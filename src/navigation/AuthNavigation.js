@@ -20,7 +20,6 @@ const AuthNavigation = (props) => {
     return (
         <NavigationContainer>
             <Tab.Navigator initialRouteName="Connexion">
-                <Tab.Screen name="Inscription" component={Inscription} />
                 <Tab.Screen name="Connexion">
                     {() => 
                     <Connexion 
@@ -30,6 +29,7 @@ const AuthNavigation = (props) => {
                         setUser={setUser} 
                     />}
                 </Tab.Screen>
+                <Tab.Screen name="Inscription" component={Inscription} />
             </Tab.Navigator>
         </NavigationContainer>
     )
