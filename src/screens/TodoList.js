@@ -8,10 +8,9 @@ import TodoItem from '../component/TodoItem'
 import auth from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore'
 // Gestion formulaire
-import { Formik } from 'formik'
+import { Formik, setNestedObjectValues } from 'formik'
 import * as yup from 'yup'
-
-import { SwipeListView } from 'react-native-swipe-list-view';
+import Icon from 'react-native-vector-icons/Ionicons'
 
 const NewTaskValidationSchema = yup.object().shape({
     name: yup
@@ -27,14 +26,21 @@ const TodoList = () => {
 
     // Fonction d'ajout d'une tâche
     const AddTodo = (values) => {
+        var higherId = 0
+        data.forEach((element, index) => {
+            if(higherId <= element.id){
+                higherId = element.id
+            }
+        })
         // Insertion de la nouvelle tâche
         firestore().collection('users').doc(userUid).update({
             task: firestore.FieldValue.arrayUnion({
-                id: data.length,
+                id: data.lengh === 0 ? 0 : higherId+1,
                 name:values.name,
                 complete:false
             })
         })
+        values.name = ""
         // Rafraîchissement de la liste
         setIsLoading(true)
     }
@@ -71,13 +77,15 @@ const TodoList = () => {
                                     />
                                 </View>
                                 <View style={styles.submitView}>
-                                    <TouchableOpacity onPress={handleSubmit} style={styles.button}>
+                                    <TouchableOpacity onPress={() => {
+                                        handleSubmit();
+                                    }} style={styles.button}>
                                         <Text style={styles.buttonText}>Ajouter</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
                             <View>
-                                {(errors.name && touched.name) &&
+                                {(errors.name) &&
                                     <Text style={{ color: 'white', backgroundColor:'#D44040', width:'100%', textAlign:'center' }}>{errors.name}</Text>
                                 }
                             </View>
@@ -183,6 +191,9 @@ const styles = StyleSheet.create({
     blockInput:{
         height:'100%',
         width:'80%',
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'space-between'
     },
     red:{
         color:'red',
