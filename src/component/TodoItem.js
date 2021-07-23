@@ -7,7 +7,6 @@ const TodoItem = (props) => {
     const {item, data, setData, firestore, userUid} = props
     const icon = Platform.OS === 'ios'? "checkmark-circle-outline" : "checkmark-circle-sharp"
     const [checked,setChecked] = useState(item.complete ? true : false)
-    const [show, setShow] = useState(true)
     const pan = useRef(new Animated.ValueXY()).current;
     const heightBar = useRef(new Animated.Value(500)).current;
 
@@ -22,7 +21,7 @@ const TodoItem = (props) => {
       ], {useNativeDriver:false}),
       onPanResponderRelease: () => {
         var x = pan.x._value
-        if(x < -150 || x > 150){
+        if(x <  -70 || x > 70){
           // On slide à gauche à droite jusqu'à disparition
             Animated.spring(
               pan, // Auto-multiplexed
@@ -88,7 +87,7 @@ const TodoItem = (props) => {
         .catch((error) => console.log(error))
     }
 
-    return show?(
+    return (
         <Animated.View
             {...panResponder.panHandlers}
             style={[pan.getLayout(), {maxHeight:heightBar, marginVertical:2}]}
@@ -110,7 +109,7 @@ const TodoItem = (props) => {
                 <Icon name={icon} style={{color: item.complete ? 'white' : 'grey', width:'9%'}} size={20} />
             </TouchableOpacity>
         </Animated.View>
-    ) : null
+    )
 }
 
 export default TodoItem

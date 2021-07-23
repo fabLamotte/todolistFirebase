@@ -4,13 +4,14 @@ import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity } from 'r
 // Component
 import Deconnexion from './../component/Deconnexion'
 import TodoItem from '../component/TodoItem'
+
 // BDD
 import auth from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore'
+
 // Gestion formulaire
 import { Formik, setNestedObjectValues } from 'formik'
 import * as yup from 'yup'
-import Icon from 'react-native-vector-icons/Ionicons'
 
 const NewTaskValidationSchema = yup.object().shape({
     name: yup
@@ -64,7 +65,7 @@ const TodoList = () => {
                     onSubmit={values => AddTodo(values)}
                     validationSchema={NewTaskValidationSchema}>
 
-                    {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                    {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
                         <View style={styles.containerForm}>
                             <View style={styles.form}>
                                 <View style={styles.blockInput}>
@@ -85,9 +86,7 @@ const TodoList = () => {
                                 </View>
                             </View>
                             <View>
-                                {(errors.name) &&
-                                    <Text style={{ color: 'white', backgroundColor:'#D44040', width:'100%', textAlign:'center' }}>{errors.name}</Text>
-                                }
+                                { (errors.name)? <Text style={{ color: 'white', backgroundColor:'#E7AA48', width:'100%', textAlign:'center' }}>{errors.name}</Text> : null }
                             </View>
                         </View>
                     )}
