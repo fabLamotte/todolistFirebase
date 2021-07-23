@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Keyboard } from 'react-native'
 
 // Component
 import Deconnexion from './../component/Deconnexion'
@@ -44,6 +44,7 @@ const TodoList = () => {
         values.name = ""
         // Rafraîchissement de la liste
         setIsLoading(true)
+        Keyboard.dismiss()
     }
  
     // Chargement des tâches au chargement de la page
