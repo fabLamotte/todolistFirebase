@@ -104,6 +104,7 @@ const TodoList = () => {
                                         setData={setData} 
                                         firestore={firestore} 
                                         userUid={userUid} 
+                                        setIsLoading={setIsLoading}
                                     />
                                 }
                                 keyExtractor={item => item.id}
@@ -170,6 +171,7 @@ const styles = StyleSheet.create({
         height:50,
         paddingLeft:20,
         justifyContent:'center',
+        width:'100%'
     },
     textarea:{
         borderWidth:1,

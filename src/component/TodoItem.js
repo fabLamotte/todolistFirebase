@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons'
 
 
 const TodoItem = (props) => {
-    const {item, data, setData, firestore, userUid} = props
+    const {item, data, setData, firestore, userUid, setIsLoading} = props
     const icon = Platform.OS === 'ios'? "checkmark-circle-outline" : "checkmark-circle-sharp"
     const [checked,setChecked] = useState(item.complete ? true : false)
     const pan = useRef(new Animated.ValueXY()).current;
@@ -44,8 +44,10 @@ const TodoItem = (props) => {
                 }
               ).start(() => {
                 var list = data
-                delete list[item.id]
-                setData(list)
+                var cible = list.filter(task => task.id == item.id)
+                var index = list.indexOf(cible[0])
+                list.splice(index,1)
+                
                 firestore().collection('users').doc(userUid).update({
                   task: firestore.FieldValue.arrayRemove(item)
                 })
@@ -61,14 +63,9 @@ const TodoItem = (props) => {
     })
     
     // Fonction de changement de status complete
-    const completeTodo = (idItem) => {
+    const completeTodo = () => {
         var list = data
-
-        var found = list.find((task, index) => {
-          if(item.id == task.id){
-            return item
-          }
-        })
+        var found = list.filter(task => task.id == item.id)[0]
 
         if(found.complete){
           found.complete = false
@@ -79,12 +76,9 @@ const TodoItem = (props) => {
         }
 
         setData(list)
-
         firestore().collection('users').doc(userUid).update({
             task: data
         })
-        .then((response) => console.log("success"))
-        .catch((error) => console.log(error))
     }
 
     return (
@@ -93,7 +87,7 @@ const TodoItem = (props) => {
             style={[pan.getLayout(), {maxHeight:heightBar, marginVertical:2}]}
         >
             <TouchableOpacity style={{
-                backgroundColor: item.complete ? 'green' : 'white', 
+                backgroundColor: item.complete ? '#2FA239' : 'white', 
                 borderRadius:10,
                 borderWidth:1,
                 padding:10,
@@ -104,7 +98,7 @@ const TodoItem = (props) => {
                 marginHorizontal:20,
                 marginVertical:2,
                 width:'90%'
-            }} onPress={() => completeTodo(item.id)}>
+            }} onPress={() => completeTodo()}>
                 <Text style={{color: item.complete ? 'white' : 'grey', width:'85%'}}>{item.name}</Text>
                 <Icon name={icon} style={{color: item.complete ? 'white' : 'grey', width:'9%'}} size={20} />
             </TouchableOpacity>
